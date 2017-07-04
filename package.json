@@ -1,11 +1,12 @@
 {
-  "name": "scrollisten",
+  "name": "IdleTaskQue",
   "version": "0.1.0",
   "description": "A manager for scroll listeners and safe callbacks execution",
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "tdd": "ava --watch"
+    "tdd": "ava --watch",
+    "build": "NODE_ENV=production webpack && NODE_ENV=development webpack"
   },
   "repository": {
     "type": "git",
@@ -15,9 +16,9 @@
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/avivshaked/scrollisten/issues"
+    "url": "https://github.com/avivshaked/IdleTaskQue/issues"
   },
-  "homepage": "https://github.com/avivshaked/scrollisten#readme",
+  "homepage": "https://github.com/avivshaked/IdleTaskQue#readme",
   "dependencies": {},
   "devDependencies": {
     "ava": "^0.19.1",
