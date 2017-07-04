@@ -9,7 +9,6 @@ const root = (typeof self === 'object' && self.self === self && self) ||
 export const requestIdleCallback =
     (root.requestIdleCallback ||
     function requestIdleCallback(cb) {
-        console.log('Using requestIdleCallback shim'); // TODO remove this line
         const start = Date.now();
         return setTimeout(() => {
             cb({
