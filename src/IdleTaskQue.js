@@ -183,6 +183,7 @@ class IdleTaskQue {
     /**
      * Removes a task by its id. The method assumes ids are unique.
      * @param {number} taskId
+     * @return boolean True if the task was successfully removed. False if it was not found by id.
      */
     removeById(taskId) {
         let taskIndex = null;
@@ -194,7 +195,7 @@ class IdleTaskQue {
             return false;
         });
         if (taskIndex === null) {
-            return null;
+            return false;
         }
 
         this._que.splice(taskIndex, 1);
