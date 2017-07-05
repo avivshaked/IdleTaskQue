@@ -53,6 +53,7 @@ class IdleTaskQue {
         return [tasksWithNoTimeout, tasksWithTimeout];
     }
 
+
     /**
      * Runs a task and removes it if it has isRunOnce.
      * @param {Task} task
@@ -184,5 +185,25 @@ class IdleTaskQue {
         this._que.splice(taskIndex, 1);
         return true;
     }
+
+    /**
+     * Cleans out the que.
+     */
+    clear() {
+        this._que = [];
+    }
+
+    /**
+     * Will iterate through all the registered tasks. Make the run only once, and then execute the
+     * tasks immediately and not via requestIdleCallback. It will then clear the que.
+     */
+    flush() {
+        this._que.map((task) => {
+            task.setRunOnce(true);
+            return task;
+        }).forEach(task => task.flush());
+        this.clear();
+    }
 }
+
 export default IdleTaskQue;

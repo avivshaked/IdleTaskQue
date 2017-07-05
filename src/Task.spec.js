@@ -157,3 +157,13 @@ test('runTaskOnIdle should use the instance\'s requestIdleCallback', (t) => {
     t.false(cbMock.called);
     t.true(mockIdleFn.called);
 });
+
+test('flush should fire the task immediately', (t) => {
+    const taskFn = sinon.spy(); // eslint-disable-line func-names
+    const binding = { some: 'object to bind' };
+    const context = { some: 'object as context' };
+    const task = new Task(taskFn, 0, { context, binding, timeout: 500, isRunOnce: true });
+    task.flush();
+    t.true(taskFn.calledWith(context));
+    t.is(taskFn.thisValues[0], binding);
+});

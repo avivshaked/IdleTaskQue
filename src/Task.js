@@ -72,6 +72,14 @@ class Task {
     }
 
     /**
+     * Sets the isRunOnce property
+     * @param {boolean} state
+     */
+    setRunOnce(state) {
+        this._isRunOnce = state;
+    }
+
+    /**
      * @returns {boolean}
      */
     get isImmediate() {
@@ -120,6 +128,13 @@ class Task {
         } else {
             this._fireTaskFn();
         }
+    }
+
+    /**
+     * Fires the task immediately (without running through requestIdleCallback
+     */
+    flush() {
+        this._fireTaskFn();
     }
 }
 

@@ -384,3 +384,29 @@ test('integration: all tasks should run', async (t) => {
     await wait();
     t.is(count, 6);
 });
+
+test('integration: All tasks should flush', (t) => {
+    let count = 0;
+    const fn = () => { count += 1; };
+    const q = new IdleTaskQue({ requestIdleCallback });
+    // Default is isImmediate so they should all run without q.run();
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.flush();
+    t.is(count, 3);
+    t.is(q._que.length, 0);
+});
+
+test('integration: all tasks should be removed', (t) => {
+    let count = 0;
+    const fn = () => { count += 1; };
+    const q = new IdleTaskQue({ requestIdleCallback });
+    // Default is isImmediate so they should all run without q.run();
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.clear();
+    t.is(count, 0);
+    t.is(q._que.length, 0);
+});
