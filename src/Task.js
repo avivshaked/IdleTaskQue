@@ -26,7 +26,7 @@ class Task {
      * @param {function} taskFn
      * @param {number} id
      * @param {{context?: *, binding?: *, timeout?: number, isRunOnce?: boolean, isImmediate?:
-     *     boolean}?} options
+     *     boolean, requestIdleCallback?: function}?} options
      */
     constructor(taskFn, id, options = {}) {
         Task._validateConstructorArguments(taskFn, id, options);
@@ -45,6 +45,7 @@ class Task {
         this._isRunOnce = isRunOnce;
         this._isImmediate = isImmediate;
         this._fireTaskFn = this._fireTaskFn.bind(this);
+        this.requestIdleCallback = options.requestIdleCallback || requestIdleCallback;
     }
 
     /**
@@ -104,7 +105,7 @@ class Task {
      * Runs the task by passing it through a requestIdleCallback
      */
     runTaskOnIdle() {
-        requestIdleCallback(this._fireTaskFn, {
+        this.requestIdleCallback(this._fireTaskFn, {
             timeout: this._timeout,
         });
     }

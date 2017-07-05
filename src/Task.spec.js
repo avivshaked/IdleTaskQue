@@ -135,3 +135,25 @@ test('runTask should invoke requestIdleCallback if the task has no timeout', (t)
     t.true(mockIdleFn.calledWith(task._fireTaskFn));
     t.deepEqual(mockIdleFn.args[0][1], { timeout: 1000 });
 });
+
+test('runTaskOnIdle should use the instance\'s requestIdleCallback', (t) => {
+    const cbMock = sinon.stub();
+    const task1 = new Task(() => {}, 0,
+        { timeout: 1000, isRunOnce: false, requestIdleCallback: cbMock });
+    mockIdleFn.reset();
+    t.false(cbMock.called);
+    t.false(mockIdleFn.called);
+    task1.runTaskOnIdle();
+    t.true(cbMock.called);
+    t.false(mockIdleFn.called);
+
+    cbMock.reset();
+    mockIdleFn.reset();
+    const task2 = new Task(() => {}, 0,
+        { timeout: 1000, isRunOnce: false });
+    t.false(cbMock.called);
+    t.false(mockIdleFn.called);
+    task2.runTaskOnIdle();
+    t.false(cbMock.called);
+    t.true(mockIdleFn.called);
+});

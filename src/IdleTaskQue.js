@@ -2,7 +2,11 @@ import Task from './Task';
 import { requestIdleCallback } from './requestIdleCallback';
 
 class IdleTaskQue {
-    constructor() {
+    /**
+     *
+     * @param {{requestIdleCallback?: function}?} config
+     */
+    constructor(config = {}) {
         /**
          * @type {number}
          * @private
@@ -25,6 +29,7 @@ class IdleTaskQue {
          * @private
          */
         this._idleCallback = this._idleCallback.bind(this);
+        this.requestIdleCallback = config.requestIdleCallback || requestIdleCallback;
     }
 
     /**
@@ -89,7 +94,7 @@ class IdleTaskQue {
      * @private
      */
     _runNoTimeoutQue(taskQue) {
-        requestIdleCallback((deadline) => {
+        this.requestIdleCallback((deadline) => {
             this._idleCallback(taskQue, deadline);
         });
     }
@@ -122,7 +127,7 @@ class IdleTaskQue {
      * Adds a new task. Returns an id that can be used to remove the task from the list.
      * @param {function} taskFn
      * @param {{context?: *, binding?: *, timeout?: number, isRunOnce?: boolean, isImmediate?:
-     *     boolean}?} options
+     *     boolean, requestIdleCallback?: function}?} options
      * @returns {number} Returns an id that can be used to remove a task from the que.
      */
     add(taskFn, options = {}) {
@@ -130,7 +135,10 @@ class IdleTaskQue {
             throw new TypeError('Received taskFn argument is not a function.');
         }
         this._id += 1;
-        const task = new Task(taskFn, this._id, options);
+        const taskRequestIdleCB = {
+            requestIdleCallback: options.requestIdleCallback || this.requestIdleCallback,
+        };
+        const task = new Task(taskFn, this._id, Object.assign({}, options, taskRequestIdleCB));
         if (task.isImmediate) {
             task.runTaskOnIdle();
         }

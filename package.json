@@ -6,7 +6,8 @@
   "scripts": {
     "test": "ava",
     "tdd": "ava --watch",
-    "build": "NODE_ENV=production webpack && NODE_ENV=development webpack"
+    "build": "NODE_ENV=production webpack && NODE_ENV=development webpack",
+    "lint": "./node_modules/.bin/eslint ./src/**/*.js"
   },
   "repository": {
     "type": "git",

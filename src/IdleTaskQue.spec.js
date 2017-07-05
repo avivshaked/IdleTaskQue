@@ -2,6 +2,7 @@ import test from 'ava';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import Task from './Task';
+import { requestIdleCallback } from './requestIdleCallback';
 
 const mockIdleFn = sinon.stub();
 const IdleTaskQue = proxyquire.noCallThru()(
@@ -17,6 +18,15 @@ test('Constructor should create an instance', (t) => {
     t.deepEqual(que._que, []);
     t.true(que.hasOwnProperty('_runTask')); // eslint-disable-line
     t.true(que.hasOwnProperty('_idleCallback')); // eslint-disable-line
+    t.true(que.hasOwnProperty('requestIdleCallback')); // eslint-disable-line
+    t.is(que.requestIdleCallback, mockIdleFn);
+});
+
+test('Constructor should accept an alternative requestIdleCallback shim', (t) => {
+    const shimMock = () => {};
+    const que = new IdleTaskQue({ requestIdleCallback: shimMock });
+    t.not(que.requestIdleCallback, mockIdleFn);
+    t.is(que.requestIdleCallback, shimMock);
 });
 
 test('add should create Tasks and add them to _que', (t) => {
@@ -219,13 +229,31 @@ test(
         const task = new Task(() => {}, 0, { isImmediate: false, isRunOnce: false });
         const q = new IdleTaskQue();
         sinon.stub(q, '_idleCallback');
+        mockIdleFn.reset();
         t.false(mockIdleFn.called);
+        t.false(q.requestIdleCallback.called);
         q._runNoTimeoutQue([task, task, task]);
         t.true(mockIdleFn.called);
+        t.true(q.requestIdleCallback.called);
         const cb = mockIdleFn.args[0][0];
         const deadline = {};
         cb(deadline);
         t.true(q._idleCallback.calledWith([task, task, task], deadline));
+        t.true(q._idleCallback.calledWith([task, task, task], deadline));
+    });
+
+test(
+    '_runNoTimeoutQue should invoke requestIdleCallback alternate shim if provided',
+    (t) => {
+        const task = new Task(() => {}, 0, { isImmediate: false, isRunOnce: false });
+        const shimMock = sinon.stub();
+        const q = new IdleTaskQue({ requestIdleCallback: shimMock });
+        mockIdleFn.reset();
+        t.false(mockIdleFn.called);
+        t.false(shimMock.called);
+        q._runNoTimeoutQue([task, task, task]);
+        t.false(mockIdleFn.called);
+        t.true(shimMock.called);
     });
 
 test('_runTimeoutQue should invoke _runTask for each task', (t) => {
@@ -279,8 +307,8 @@ test(
 
 test('integration: all immediate tasks should run', async (t) => {
     let count = 0;
-    const fn = () => count += 1;
-    const q = new IdleTaskQue();
+    const fn = () => { count += 1; };
+    const q = new IdleTaskQue({ requestIdleCallback });
     // Default is isImmediate so they should all run without q.run();
     q.add(fn);
     q.add(fn);
@@ -301,7 +329,7 @@ test('integration: all immediate tasks should run', async (t) => {
 
 test('integration: all immediate tasks should run', async (t) => {
     const fn = () => t.pass();
-    const q = new IdleTaskQue();
+    const q = new IdleTaskQue({ requestIdleCallback });
     // Default is isImmediate so they should all run without q.run();
     q.add(fn);
     q.add(fn);
@@ -320,8 +348,7 @@ test('integration: all immediate tasks should run', async (t) => {
 });
 
 test('integration: all immediate tasks should not be placed in que', async (t) => {
-    let count = 0;
-    const fn = () => count += 1;
+    const fn = () => {};
     const q = new IdleTaskQue();
     // Default is isImmediate so they should all run without q.run();
     q.add(fn);
@@ -331,11 +358,12 @@ test('integration: all immediate tasks should not be placed in que', async (t) =
 });
 
 test('integration: all tasks should run', async (t) => {
+    mockIdleFn.reset();
     mockIdleFn.callsFake((cb) => {
         cb({ timeRemaining: () => 10 });
     });
     let count = 0;
-    const fn = () => count += 1;
+    const fn = () => { count += 1; };
     const q = new IdleTaskQue();
     // Default is isImmediate so they should all run without q.run();
     q.add(fn);
