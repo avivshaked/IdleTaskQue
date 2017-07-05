@@ -1,8 +1,8 @@
 {
-  "name": "IdleTaskQue",
+  "name": "idle-task-que",
   "version": "0.1.0",
-  "description": "A manager for scroll listeners and safe callbacks execution",
-  "main": "index.js",
+  "description": "A task manager that utilizes requestIdleCallback api to run tasks safely on the browser",
+  "main": "./dist/index.js",
   "scripts": {
     "test": "ava",
     "tdd": "ava --watch",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/avivshaked/scrollisten.git"
+    "url": "git+https://github.com/avivshaked/IdleTaskQue"
   },
   "keywords": [],
   "author": "",
