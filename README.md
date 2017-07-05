@@ -184,3 +184,4 @@ que.add(taskFunction3, { isImmediate: false, isRunOnce: false });
 que.flush();
 ```
 The flush method will run all the tasks immediately, and clear the que. A good use case for this might be on beforeunload event.
+The flush method is bound to the instance, so it can be passed safely as a callback.
