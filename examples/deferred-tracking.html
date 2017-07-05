@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>This code will add a few tasks that should be deferred until there's time for them to run safely without affecting UI performance. The code will flood the event loop with tasks that make changes to the DOM. The deferred tasks should only run after the DOM tasks are done.</p>
+<div>Output:</div>
+<div id="output" style="border: 1px solid black; display: block; height: 50vh;"></div>
+<div id="showActivity" style="border: 1px solid black; display: block; height: 20vh;">Show
+    Activity
+</div>
+
+<!-- SCRIPTS -->
+<script src="../dist/index.min.js"></script>
+<script>
+    const addText = (text) => {
+        const el = document.getElementById('output');
+        const textNode = document.createTextNode(text);
+        const br = document.createElement('br');
+        el.appendChild(textNode);
+        el.appendChild(br);
+
+    };
+
+    // This will be out mock tracking function
+    const mockTrackingFn = () => addText(`sending some tracking on ${Date.now()}`);
+
+    const makeEventLoopBusy = () => {
+        const el = document.getElementById('showActivity');
+        el.style.backgroundColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    };
+
+    // Create a new que
+    const que = IdleTaskQue.create();
+
+    // print out the current time
+    addText(`Current time: ${Date.now()}`);
+
+    // Add a few tracking tasks
+    que.add(mockTrackingFn);
+    que.add(mockTrackingFn);
+    que.add(mockTrackingFn);
+    que.add(mockTrackingFn);
+    que.add(mockTrackingFn);
+    que.add(mockTrackingFn);
+
+    // Now lets make the cpu busy
+    addText(`Making event loop busy: ${Date.now()}`);
+    for (let i = 0; i < 50000; i += 1) {
+        setTimeout(makeEventLoopBusy, 0);
+    }
+    addText(`After loop: ${Date.now()}`);
+
+</script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>This code will add a listener with a few tasks that should be deferred until there's time for
+    them to run safely without affecting UI performance. The code will flood the event loop on every
+    click with tasks that make changes to the DOM. The deferred tasks should only run after the DOM
+    tasks are done.</p>
+<div>Output:</div>
+<div id="output"
+     style="border: 1px solid black; display: block; height: 25vh; overflow: auto;"></div>
+<p>click this div:</p>
+<div id="showActivity"
+     style="border: 1px solid black; display: block; height: 25vh; overflow: auto;">
+    Click Me!
+</div>
+
+<!-- SCRIPTS -->
+<script src="../dist/index.min.js"></script>
+<script>
+    const addText = (text) => {
+        const el = document.getElementById('output');
+        const textNode = document.createTextNode(text);
+        const br = document.createElement('br');
+        el.appendChild(textNode);
+        el.appendChild(br);
+
+    };
+
+    // This will be out mock tracking function
+    const mockWorkFn = () => addText(`doing some deferred work at ${Date.now()}`);
+    const makeEventLoopBusy = () => {
+        const el = document.getElementById('showActivity');
+        el.style.backgroundColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    };
+
+    // Create a new que
+    const que = IdleTaskQue.create();
+
+    // print out the current time
+    addText(`Current time: ${Date.now()}`);
+
+    // Add a few tasks
+    que.add(mockWorkFn, { isImmediate: false, isRunOnce: false });
+    que.add(mockWorkFn, { isImmediate: false, isRunOnce: false });
+    que.add(mockWorkFn, { isImmediate: false, isRunOnce: false });
+    que.add(mockWorkFn, { isImmediate: false, isRunOnce: false });
+    que.add(() => {
+        const el = document.getElementById('output');
+        el.scrollTop = el.scrollHeight;
+    }, { isImmediate: false, isRunOnce: false });
+
+    // Add event listener
+    document.getElementById('showActivity').addEventListener('click', () => {
+        que.run();
+        const times = Math.floor(Math.random()*30000);
+        console.log(times);
+        for (let i = 0; i <times; i += 1) {
+            setTimeout(makeEventLoopBusy, 0);
+        }
+    })
+</script>
+</body>
+</html>

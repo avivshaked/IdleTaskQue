@@ -29,6 +29,21 @@ class IdleTaskQue {
          * @private
          */
         this._idleCallback = this._idleCallback.bind(this);
+
+
+        /**
+         * @type {Function}
+         */
+        this.run = this.run.bind(this);
+
+        /**
+         * @type {Function}
+         */
+        this.flush = this.flush.bind(this);
+
+        /**
+         * @type {Function}
+         */
         this.requestIdleCallback = config.requestIdleCallback || requestIdleCallback;
     }
 
