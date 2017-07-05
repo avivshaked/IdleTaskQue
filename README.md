@@ -9,11 +9,21 @@ IdleTaskQue uses requestIdleCallback api to mitigate the issues mentioned above.
 
 ## Contents
 - [How to include](#how-to-include)
+  - [Include script](#include-script)
+  - [Include with commonjs](#include-with-commonjs)
+- [How to use](#how-to-use)
+  - [Adding Tasks](#adding-tasks)
+  - [Adding immediate tasks](#adding-immediate-tasks)
+  - [Adding non immediate tasks](#adding-non-immediate-tasks)
+  - [Executing the que](#executing-the-que)
+  - [Removing a task](#removing-a-task)
+  - [Clearing the que](#clearing-the-que)
+  - [Flushing the que](#flushing-the-que)
 
 ## How to include
 You can include in one of two ways:
 
----
+### Include script
 Use a script tag. Including as a script tag will place `IdleTaskQue` object on the window object.
  ```html
   <script src="/node_modules/idle-task-que/dist/inde.min.js"></script>
@@ -30,14 +40,19 @@ const que = new IdleTaskQue.default();
 ```
 <br/>
 
----
+### Include with commonjs
 Use commonjs pattern to include.
 ```js
 import IdleTaskQue from 'idle-task-que';
 
 const que = new IdleTaskQue();
 ```
+Or
+```js
+import { createIdleTaskQue } from 'idle-task-que';
 
+const que = createIdleTaskQue();
+```
 ## How to use
 ### Adding tasks
 Import the que factory (you can import the constructor and use the new keyword as well), create a new que, and use the **add** method.
@@ -115,7 +130,7 @@ que.add(taskFunction3, { isImmediate: false, isRunOnce: false });
 window.addEventListener('scroll', que.run);
 ```
 
-### Removing a task from the que
+### Removing a task
 There are two ways to remove a task. The first way is to use the task function as an identifier.
 ```js
 import { createIdleTaskQue } from 'idle-task-que';
