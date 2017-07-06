@@ -109,6 +109,16 @@ test('_fireTaskFn should nullify _taskFn if isRunOnce is true',
         t.is(task._taskFn, null);
     });
 
+test('_fireTaskFn should not invoke twice when task isRunOnce', (t) => {
+    const taskFn = sinon.spy(); // eslint-disable-line func-names
+    const binding = { some: 'object to bind' };
+    const context = { some: 'object as context' };
+    const task = new Task(taskFn, 0, { context, binding, timeout: 500, isRunOnce: true });
+    task._fireTaskFn();
+    task._fireTaskFn();
+    t.is(taskFn.callCount, 1);
+});
+
 test('runTask should invoke _fireTaskFn if the task has no timeout', (t) => {
     const task = new Task(() => {}, 0);
     sinon.stub(task, '_fireTaskFn');

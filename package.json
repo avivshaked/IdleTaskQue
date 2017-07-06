@@ -1,10 +1,11 @@
 {
   "name": "idle-task-que",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "A task manager that utilizes requestIdleCallback api to run tasks safely on the browser",
   "main": "dist/index.js",
   "scripts": {
-    "test": "ava",
+    "test": "nyc ava && npm run report",
+    "report": "nyc report --reporter=html",
     "tdd": "ava --watch",
     "build": "NODE_ENV=production webpack && NODE_ENV=development webpack",
     "lint": "./node_modules/.bin/eslint ./src/**/*.js"
@@ -36,6 +37,7 @@
     "eslint-loader": "^1.8.0",
     "eslint-plugin-import": "^2.3.0",
     "ghooks": "^2.0.0",
+    "nyc": "^11.0.3",
     "proxyquire": "^1.8.0",
     "sinon": "^2.3.5",
     "webpack": "^3.0.0"
@@ -66,5 +68,17 @@
     "ghooks": {
       "pre-commit": "npm run lint && npm run test"
     }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "lines": 90,
+    "statements": 90,
+    "functions": 90,
+    "branches": 90,
+    "exclude": [
+      "**/*.spec.js",
+      "build",
+      "src/requestIdleCallback.js"
+    ]
   }
 }
