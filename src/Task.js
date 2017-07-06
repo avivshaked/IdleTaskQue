@@ -131,9 +131,11 @@ class Task {
     }
 
     /**
-     * Fires the task immediately (without running through requestIdleCallback
+     * Sets isRunOnce to true, then fires the task immediately (without running through
+     * requestIdleCallback). This will also effectively cause the registered function to nullify.
      */
     flush() {
+        this._isRunOnce = true;
         this._fireTaskFn();
     }
 }

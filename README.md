@@ -20,7 +20,10 @@ IdleTaskQue uses requestIdleCallback api to mitigate the issues mentioned above.
   - [Clearing the que](#clearing-the-que)
   - [Flushing the que](#flushing-the-que)
   - [Different requestIdleCallback implementation](#different-requestidlecallback-implementation)
-
+- [API](#api)
+  - [Task](#task)
+  - [IdleTaskQue](#idletaskque)
+  - [Module](#module)
 ## How to include
 You can include in one of two ways:
 
@@ -211,4 +214,120 @@ The alternate implementation will only take effect in the execution of that part
 
 Don't forget to bind your implementation if it has internal references to `this`.
 
+# API
+## Task
+Ideally you should not use Task directly. IdleTaskQue will create a new task every time an **add** is being called on an instance.
+If however you find you want to use Task directly, this is it's api.
+### new Task(taskFn, id[, options])
+Creates a new instance.
 
+**Arguments:**
+* taskFn: Function. This is the function that will be executed by the Task.
+* id: number. There are no restrictions on the number.
+* options: Object [optional].
+  * *context*: [optional] anything. defaults to empty literal object. This value is passed as the first (and only) argument to the task function when it is invoked.
+  * *binding*: [optional] anything. defaults to empty literal object. This value will be used as the calling site for the task function. If the task function is unbound, and `this` reference will refer to this value.
+  * *timeout*: [optional] number. Defaults to 0. This value is passed to requestIdleCallback api. When the value is greater then 0, the api will try and fire the task function before the timeout expires.
+  * *isRunOnce*: [optional] boolean. Defaults to true. If this value is true, once the task function is executed, the registered task function will be nullified. If the value is false, the task function will be executed every time **runTask** method is executed.
+  * *isImmediate*: [optional] boolean. Defaults to true. This property is irrelevant for the Task instance.
+  * *requestIdleCallback*: [optional] function. Defaults to native requestIdleCallback or the provided shim. This property should be populated if you want to supply a different shim for requestIdleCallback.
+
+**returns:**
+An instance of Task.
+
+### runTask()
+Executes the registered function. The task will either be executed using requestIdleCallback if the instance has timeout that is greater than zero, or executed directly if timeout is zero.
+The task function will be executed with the the instance's binding as the calling site, and the instance's context will be passed as the first and only argument to the task.
+### RunTaskOnIdle()
+Executes the registered function. The task will be executed using requestIdleCallback event if the instance's timeout is zero.
+The task function will be executed with the the instance's binding as the calling site, and the instance's context will be passed as the first and only argument to the task.
+### flush()
+Executes the registered function immediately without waiting for an idle frame. It also nullifies the task function. Once this method is used, any additional runTask, runTaskOnIdle, and flush executions will have no effect.
+### isTaskFunction(taskFn)
+Returns true if the received function is equal to the registered function.
+
+**Arguments:**
+* taskFn: Function.
+
+**Returns:**
+
+Boolean.
+### setRunOnce(state)
+**arguments:**
+* state: boolean. If true will set the registered task function to run once. If false will set the registered function to run multiple times.
+### (Property) timeout: number
+Returns the timeout value.
+### (Property) isRunOnce: boolean
+Returns the value of isRunOnce.
+### (Property) isImmediate: boolean
+Returns the value of isImmediate.
+### (Property) id: number
+Returns the value of id.
+## IdleTaskQue
+This constructor is the main tool of this library. Most actions will be done with an instance of this constructor.
+### new IdleTaskQue([config])
+Returns an instance of IdleTaskQue.
+
+**Arguments:**
+* config: Object [optional].
+  * requestIdleCallback: Function. Should comply with requestIdleCallback API.
+
+**Returns:**
+
+An instance of IdleTaskQue.
+
+### add(taskFn[ ,options])
+Adds a task function to the que.
+
+**Arguments:**
+* taskFn: Function. This function will be used to create a new Task. The task instance will be registered or executed.
+* options: Object [optional].
+  * *context*: [optional] anything. defaults to empty literal object. This value is passed as the first (and only) argument to the task function when it is invoked.
+  * *binding*: [optional] anything. defaults to empty literal object. This value will be used as the calling site for the task function. If the task function is unbound, and `this` reference will refer to this value.
+  * *timeout*: [optional] number. Defaults to 0. This value is passed to requestIdleCallback api. When the value is greater then 0, the api will try and fire the task function before the timeout expires.
+  * *isRunOnce*: [optional] boolean. Defaults to true. If this value is true, once the task function is executed, it will be removed from the que. If the value is false, the task function will be executed every time **run** method is executed.
+  * *isImmediate*: [optional] boolean. Defaults to true. If this value is true, the task will go directly to execution on idle frame. This is useful for ad hoc tasks that can be deferred to later. A good example for this is tracking.
+ If the value is false, the task will be added to a que that will only be executed when the **run** method is called. This is useful for example for listeners callbacks.
+  * *requestIdleCallback*: [optional] function. Defaults to native requestIdleCallback or the provided shim. This property should be populated if you want to supply a different shim for requestIdleCallback.
+
+**Returns:**
+
+An in id number. That id can be used later to remove the registered task.
+
+### run()
+Executes all the registered tasks using requestIdleCallback.
+
+### remove(taskFn)
+Removes all the tasks from the que that have that function.
+
+**Arguments:**
+* taskFn: Function.
+
+### removeById(taskId)
+Removes a task from the que. The task must have an id that is equal to the received taskId.
+
+**Arguments:**
+* taskId: number.
+
+**Returns:**
+
+Boolean. True if the task was successfully removed. False if the task was not found.
+
+### clear()
+Removes all tasks from the que without executing them.
+
+### flush()
+Executes all the tasks immediately and removes them from the que.
+
+## Module
+These are the exports of the module:
+### default
+This is the IdleTaskQue constructor.
+### requestIdleCallback
+This exposes as a bound function either the native implementation or the default used shim.
+### cancelIdleCallback
+This exposes as a bound function either the native implementation or the default used shim.
+### createIdleTaskQue
+A factory method that is used to create new IdleTaskQue instances. The function signature is the same as the IdleTaskQue constructor, but the `new` keyword is not used.
+### create (alias for createIdleTaskQue)
+A factory method that is used to create new IdleTaskQue instances. The function signature is the same as the IdleTaskQue constructor, but the `new` keyword is not used.
