@@ -1,6 +1,6 @@
 {
   "name": "idle-task-que",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A task manager that utilizes requestIdleCallback api to run tasks safely on the browser",
   "main": "dist/index.js",
   "scripts": {
@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/avivshaked/IdleTaskQue"
   },
-  "keywords": ["que", "queue", "task", "requestIdleCallback"],
+  "keywords": [
+    "que",
+    "queue",
+    "task",
+    "requestIdleCallback"
+  ],
   "author": "Aviv Shaked",
   "license": "MIT",
   "bugs": {
