@@ -19,6 +19,7 @@ IdleTaskQue uses requestIdleCallback api to mitigate the issues mentioned above.
   - [Removing a task](#removing-a-task)
   - [Clearing the que](#clearing-the-que)
   - [Flushing the que](#flushing-the-que)
+  - [Different requestIdleCallback implementation](#different-requestidlecallback-implementation)
 
 ## How to include
 You can include in one of two ways:
@@ -185,3 +186,29 @@ que.flush();
 ```
 The flush method will run all the tasks immediately, and clear the que. A good use case for this might be on beforeunload event.
 The flush method is bound to the instance, so it can be passed safely as a callback.
+### Different requestIdleCallback implementation
+You might want to provide a different shim than the one shipped with this library. The current shim does very little and is mostly there to prevent the library from breaking in agents that do not support requestIdleCallback.
+A good example of a more complicated shim is [PixelsCommander/requestIdleCallback-polyfill](https://github.com/PixelsCommander/requestIdleCallback-polyfill). This library does much more and prevents operation from being executed while user performing some actions on interface.
+To Use this polyfill you can consume it before consuming IdleTaskQue. The library will place the polyfill on the global object, and that will be used by IdleTaskQue.
+Make sure to place it before consuming IdleTaskQue, otherwise the polyfill will not take effect.
+
+Another way to set a different implementation of requestIdleCallback is to provide your own function to the constructor.
+```js
+import { createIdleTaskQue } from 'idle-task-que';
+
+const que = new IdleTaskQue({ requestIdleCallback: yourOwnImplementation });
+```
+
+There's a third way of providing your own implementation. It can be done when adding a new task.
+```js
+import { createIdleTaskQue } from 'idle-task-que';
+
+const que = createIdleTaskQue();
+
+que.add(taskFunction, { requestIdleCallback: yourOwnImplementation });
+```
+The alternate implementation will only take effect in the execution of that particular task.
+
+Don't forget to bind your implementation if it has internal references to `this`.
+
+
