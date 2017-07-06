@@ -9,3 +9,5 @@
 /.babelrc
 /examples/
 /.DS_Store
+.nyc_output/
+/coverage/

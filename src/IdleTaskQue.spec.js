@@ -29,6 +29,15 @@ test('Constructor should accept an alternative requestIdleCallback shim', (t) =>
     t.is(que.requestIdleCallback, shimMock);
 });
 
+test('add should throw if provided taslFn is not a function', (t) => {
+    const que = new IdleTaskQue();
+    const fn = () => {
+        que.add('not a function');
+    };
+
+    t.throws(fn, TypeError);
+});
+
 test('add should create Tasks and add them to _que', (t) => {
     const que = new IdleTaskQue();
     const fn1 = () => {};
@@ -107,6 +116,11 @@ test('removeById should remove a task by id', (t) => {
     t.false(que._que[0].isTaskFn(fn4));
     que.removeById(id1);
     t.is(que._que.length, 0);
+});
+
+test('removeById should return false if id is not in list', (t) => {
+    const que = new IdleTaskQue();
+    t.is(que.removeById(10), false);
 });
 
 test('_getSeparatedLists should return an array of two task arrays based on task.timeout', (t) => {
@@ -222,6 +236,41 @@ test(
         t.is(q._runTask.callCount, 3);
         t.false(q._runNoTimeoutQue.called);
     });
+
+test('_runTask should remove the task if isRunOnce', (t) => {
+    const fn = () => {};
+    const q = new IdleTaskQue();
+    q.add(fn, { isImmediate: false, isRunOnce: true });
+    q.add(fn, { isImmediate: false, isRunOnce: true });
+    q.add(fn, { isImmediate: false, isRunOnce: true });
+
+    const task = q._que[0];
+    t.true(q._que.indexOf(task) === 0);
+    q._runTask(task);
+    t.true(q._que.indexOf(task) === -1);
+});
+
+test('_runTask should not remove the task if not isRunOnce', (t) => {
+    const fn = () => {};
+    const q = new IdleTaskQue();
+    q.add(fn, { isImmediate: false, isRunOnce: false });
+    q.add(fn, { isImmediate: false, isRunOnce: false });
+    q.add(fn, { isImmediate: false, isRunOnce: false });
+
+    const task = q._que[0];
+    t.true(q._que.indexOf(task) === 0);
+    q._runTask(task);
+    t.true(q._que.indexOf(task) === 0);
+});
+
+test('_runTask should not remove the task if it is not in the que', (t) => {
+    const fn = () => {};
+    const q = new IdleTaskQue();
+    const task = new Task(fn, 0, { isRunOnce: true });
+    t.true(q._que.indexOf(task) === -1);
+    q._runTask(task);
+    t.true(q._que.indexOf(task) === -1);
+});
 
 test(
     '_runNoTimeoutQue should invoke requestIdleCallback and in the callback call this._idleCallback',
