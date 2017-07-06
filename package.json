@@ -1,6 +1,6 @@
 {
   "name": "idle-task-que",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A task manager that utilizes requestIdleCallback api to run tasks safely on the browser",
   "main": "dist/index.js",
   "scripts": {

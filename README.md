@@ -1,6 +1,9 @@
 # IdleTaskQue
 A task manager that utilizes requestIdleCallback api to run tasks safely on the browser.
 
+[![Build Status](https://travis-ci.org/avivshaked/IdleTaskQue.svg?branch=master)](https://travis-ci.org/avivshaked/IdleTaskQue)
+
+
 From [Using requestIdleCallback](https://developers.google.com/web/updates/2015/08/using-requestidlecallback) by [Paul Lewis](https://developers.google.com/web/resources/contributors#paullewis):
 
 >Many sites and apps have a lot of scripts to execute. Your JavaScript often needs to be run as soon as possible, but at the same time you don’t want it to get in the user’s way. If you send analytics data when the user is scrolling the page, or you append elements to the DOM while they happen to be tapping on the button, your web app can become unresponsive, resulting in a poor user experience.
