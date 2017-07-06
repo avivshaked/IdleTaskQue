@@ -25,8 +25,13 @@ IdleTaskQue uses requestIdleCallback api to mitigate the issues mentioned above.
   - [IdleTaskQue](#idletaskque)
   - [Module](#module)
 ## How to include
-You can include in one of two ways:
+First you need to install.
+```bash
+npm install --save idle-task-que
+```
+<br>
 
+You can include in one of two ways:
 ### Include script
 Use a script tag. Including as a script tag will place `IdleTaskQue` object on the window object.
  ```html
