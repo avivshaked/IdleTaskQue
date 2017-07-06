@@ -1,6 +1,6 @@
 {
   "name": "idle-task-que",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "A task manager that utilizes requestIdleCallback api to run tasks safely on the browser",
   "main": "dist/index.js",
   "scripts": {
@@ -35,6 +35,7 @@
     "eslint-config-airbnb-base": "^11.2.0",
     "eslint-loader": "^1.8.0",
     "eslint-plugin-import": "^2.3.0",
+    "ghooks": "^2.0.0",
     "proxyquire": "^1.8.0",
     "sinon": "^2.3.5",
     "webpack": "^3.0.0"
@@ -60,5 +61,10 @@
     "presets": [
       "@ava/stage-4"
     ]
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "npm run lint && npm run test"
+    }
   }
 }
