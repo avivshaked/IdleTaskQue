@@ -1,6 +1,8 @@
 # IdleTaskQue
 A task manager that utilizes requestIdleCallback api to run tasks safely on the browser.
 
+[![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg?style=flat-square)](https://github.com/avivshaked/IdleTaskQue/blob/master/LICENSE)
+[![npm](https://img.shields.io/npm/v/idle-task-que.svg?style=flat-square)](https://www.npmjs.com/package/idle-task-que)
 [![Build Status](https://travis-ci.org/avivshaked/IdleTaskQue.svg?branch=master)](https://travis-ci.org/avivshaked/IdleTaskQue)
 
 
