@@ -354,6 +354,20 @@ test(
         t.true(q._runTimeoutQue.calledWith([1, 2]));
     });
 
+test('integration: length should return the number of tasks in the que', (t) => {
+    const q = new IdleTaskQue();
+    t.is(q.length, 0);
+    const fn = () => {};
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    const id = q.add(fn, { isRunOnce: false, isImmediate: false });
+    q.add(fn, { isRunOnce: false, isImmediate: false });
+    t.is(q.length, 3);
+    q.removeById(id);
+    t.is(q.length, 2);
+    q.remove(fn);
+    t.is(q.length, 0);
+});
+
 test('integration: all immediate tasks should run', async (t) => {
     let count = 0;
     const fn = () => { count += 1; };

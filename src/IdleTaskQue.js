@@ -220,6 +220,14 @@ class IdleTaskQue {
         }).forEach(task => task.flush());
         this.clear();
     }
+
+    /**
+     * returns the number of waiting tasks
+     * @returns {Number}
+     */
+    get length() {
+        return this._que.length;
+    }
 }
 
 export default IdleTaskQue;

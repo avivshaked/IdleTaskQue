@@ -329,6 +329,9 @@ Removes all tasks from the que without executing them.
 ### flush()
 Executes all the tasks immediately and removes them from the que.
 
+### #(Property)# length
+Returns the number of tasks in the que.
+
 ## Module
 These are the exports of the module:
 ### default
